@@ -45,24 +45,25 @@ namespace gfxfont
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -83,7 +84,8 @@ namespace gfxfont
             this.columnHeader5,
             this.columnHeader6,
             this.columnHeader7,
-            this.columnHeader8});
+            this.columnHeader8,
+            this.columnHeader10});
             this.listView1.ContextMenuStrip = this.contextMenuStrip1;
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
@@ -91,11 +93,35 @@ namespace gfxfont
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(194, 274);
+            this.listView1.Size = new System.Drawing.Size(194, 394);
             this.listView1.TabIndex = 7;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Symbol";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Code";
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Width";
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Height";
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "xAdvance";
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "xOffset";
             // 
             // contextMenuStrip1
             // 
@@ -131,7 +157,7 @@ namespace gfxfont
             this.listView2.HideSelection = false;
             this.listView2.Location = new System.Drawing.Point(0, 0);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(589, 114);
+            this.listView2.Size = new System.Drawing.Size(389, 114);
             this.listView2.TabIndex = 8;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
@@ -146,6 +172,11 @@ namespace gfxfont
             // 
             this.columnHeader4.Text = "Start code";
             this.columnHeader4.Width = 100;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "yAdvance";
+            this.columnHeader9.Width = 80;
             // 
             // numericUpDown4
             // 
@@ -185,18 +216,29 @@ namespace gfxfont
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(398, 38);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(194, 274);
+            this.tableLayoutPanel1.SetRowSpan(this.panel1, 2);
+            this.panel1.Size = new System.Drawing.Size(194, 394);
             this.panel1.TabIndex = 1;
             // 
             // panel2
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.panel2, 2);
             this.panel2.Controls.Add(this.listView2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 318);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(589, 114);
+            this.panel2.Size = new System.Drawing.Size(389, 114);
             this.panel2.TabIndex = 2;
+            // 
+            // panel3
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.panel3, 2);
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Controls.Add(this.numericUpDown4);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(3, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(589, 29);
+            this.panel3.TabIndex = 3;
             // 
             // label1
             // 
@@ -238,21 +280,9 @@ namespace gfxfont
             this.toolStripButton2.Text = "export font";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
-            // columnHeader9
+            // columnHeader10
             // 
-            this.columnHeader9.Text = "yAdvance";
-            this.columnHeader9.Width = 80;
-            // 
-            // panel3
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.panel3, 2);
-            this.panel3.Controls.Add(this.label1);
-            this.panel3.Controls.Add(this.numericUpDown4);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(3, 3);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(589, 29);
-            this.panel3.TabIndex = 3;
+            this.columnHeader10.Text = "yOffset";
             // 
             // Form1
             // 
@@ -269,10 +299,10 @@ namespace gfxfont
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -304,6 +334,7 @@ namespace gfxfont
         private System.Windows.Forms.ToolStripMenuItem pasteGlyphToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }
 

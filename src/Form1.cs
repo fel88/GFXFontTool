@@ -33,23 +33,23 @@ namespace gfxfont
             }
         }
 
-
         void setFont(GfxFont font)
         {
-            _font = font;
-            //'\u0410';
+            _font = font;            
             listView1.Items.Clear();
             for (int i = 0; i < font.Glyphs.Count; i++)
             {
                 ushort c = (ushort)(i + font.StartCode);
-                font.Glyphs[i].Code = c;
-                byte b1 = (byte)(c & 0xff);
-                byte b2 = (byte)((c >> 8) & 0xff);
-                var str = Encoding.Unicode.GetString(new[] { b1, b2 });
+                font.Glyphs[i].Code = c;                
                 char cc = (char)c;
-                listView1.Items.Add(new ListViewItem(new string[] { cc+"",
-                    "0x"+c.ToString("X") , font.Glyphs[i].Width.ToString() , font.Glyphs[i].Height.ToString()
-              ,  font.Glyphs[i].xOffset.ToString() ,  font.Glyphs[i].yOffset.ToString()
+                listView1.Items.Add(new ListViewItem(new string[] {
+                    $"{cc}",
+                    "0x"+c.ToString("X"),
+                    font.Glyphs[i].Width.ToString(),
+                    font.Glyphs[i].Height.ToString(),
+                    font.Glyphs[i].xAdvance.ToString(),
+                    font.Glyphs[i].xOffset.ToString(),
+                    font.Glyphs[i].yOffset.ToString()
                 })
                 //{ Tag = c });
                 { Tag = font.Glyphs[i] });
