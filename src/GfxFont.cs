@@ -35,7 +35,7 @@ namespace gfxfont
                 offset += item.Bitmap.Length;
             }
             sb.AppendLine("};");
-            sb.AppendLine("const GFXfont exportFont[] PROGMEM = {");
+            sb.AppendLine("const GFXfont exportFont PROGMEM = {");
             sb.AppendLine("(uint8_t*)exportFontBitmaps,");
             sb.AppendLine("(GFXglyph*)exportFontGlyphs,");
             var endCode = StartCode + Glyphs.Count;

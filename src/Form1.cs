@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,13 +29,15 @@ namespace gfxfont
             listView2.Items.Clear();
             for (int i = 0; i < Fonts.Count; i++)
             {
-                listView2.Items.Add(new ListViewItem(new string[] { Fonts[i].Name }) { Tag = Fonts[i] });
+                listView2.Items.Add(new ListViewItem(new string[] { Fonts[i].Name, "0x" + Fonts[i].StartCode.ToString("X2"), Fonts[i].YAdvance.ToString(), }) { Tag = Fonts[i] });
             }
         }
+
 
         void setFont(GfxFont font)
         {
             _font = font;
+            //'\u0410';
             listView1.Items.Clear();
             for (int i = 0; i < font.Glyphs.Count; i++)
             {
@@ -43,7 +46,9 @@ namespace gfxfont
                 byte b1 = (byte)(c & 0xff);
                 byte b2 = (byte)((c >> 8) & 0xff);
                 var str = Encoding.Unicode.GetString(new[] { b1, b2 });
-                listView1.Items.Add(new ListViewItem(new string[] { str, c.ToString("X") , font.Glyphs[i].Width.ToString() , font.Glyphs[i].Height.ToString()
+                char cc = (char)c;
+                listView1.Items.Add(new ListViewItem(new string[] { cc+"",
+                    "0x"+c.ToString("X") , font.Glyphs[i].Width.ToString() , font.Glyphs[i].Height.ToString()
               ,  font.Glyphs[i].xOffset.ToString() ,  font.Glyphs[i].yOffset.ToString()
                 })
                 //{ Tag = c });
@@ -233,10 +238,14 @@ namespace gfxfont
             }
 
             var desc = spl22.First(z => z.Contains("GFXfont"));
-            var spll = desc.Split(new char[] { ',', '}', ';', '\n', '\r' }).ToArray();
+            var spll = desc.Split(new char[] { ',', '}', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             try
             {
-                font1.StartCode = Convert.ToUInt16(spll[spll.Length - 3].Trim(), 16);
+                var startCodeToken = spll[spll.Length - 3].Trim();
+                var yAdvanceToken = spll[spll.Length - 1].Trim();
+
+                font1.StartCode = startCodeToken.StartsWith("0x") ? Convert.ToUInt16(startCodeToken, 16) : ushort.Parse(startCodeToken);
+                font1.YAdvance = yAdvanceToken.StartsWith("0x") ? Convert.ToUInt16(yAdvanceToken, 16) : int.Parse(yAdvanceToken);
             }
             catch (Exception ex)
             {
