@@ -32,7 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +52,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GfxFont.cs" />
+    <Compile Include="Glyph.cs" />
     <Compile Include="Kerning.cs" />
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>

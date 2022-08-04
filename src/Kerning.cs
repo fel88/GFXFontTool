@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Windows.Media;
 
 namespace gfxfont
 {
@@ -85,13 +84,13 @@ namespace gfxfont
 
 
             // create typeface from font
-            var typeface = new Typeface("Arial");
+            //var typeface = new Typeface("Arial");
 
             // create glyphtypeface
-            typeface.TryGetGlyphTypeface(out var glyphTypeface);
+            //typeface.TryGetGlyphTypeface(out var glyphTypeface);
 
             // retrieve metrics
-            glyphTypeface.AdvanceHeights.TryGetValue('S', out var advancedHeight);
+            //glyphTypeface.AdvanceHeights.TryGetValue('S', out var advancedHeight);
         }
     }
 }
