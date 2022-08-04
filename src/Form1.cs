@@ -10,10 +10,14 @@ namespace gfxfont
 {
     public partial class Form1 : Form
     {
+        static Form1()
+        {
+            Fonts.Add(ParseFont("CourierCyr12.h"));
+        }
         public Form1()
         {
             InitializeComponent();
-            Fonts.Add(parseFont("CourierCyr12.h"));
+
             _font = Fonts.Last();
             setFont(_font);
             updateFontsList();
@@ -30,46 +34,43 @@ namespace gfxfont
 
         void setFont(GfxFont font)
         {
-            _font = font;            
+            _font = font;
             listView1.Items.Clear();
-            for (int i = 0; i < font.Glyphs.GetLength(0); i++)
+            for (int i = 0; i < font.Glyphs.Count; i++)
             {
                 ushort c = (ushort)(i + font.StartCode);
+                font.Glyphs[i].Code = c;
                 byte b1 = (byte)(c & 0xff);
                 byte b2 = (byte)((c >> 8) & 0xff);
                 var str = Encoding.Unicode.GetString(new[] { b1, b2 });
-                listView1.Items.Add(new ListViewItem(new string[] { str, c.ToString("X") , font.Glyphs[i, 1].ToString() , font.Glyphs[i, 2].ToString()
-              ,  font.Glyphs[i,3].ToString() ,  font.Glyphs[i,4].ToString()
-                }) { Tag = c });
+                listView1.Items.Add(new ListViewItem(new string[] { str, c.ToString("X") , font.Glyphs[i].Width.ToString() , font.Glyphs[i].Height.ToString()
+              ,  font.Glyphs[i].xOffset.ToString() ,  font.Glyphs[i].yOffset.ToString()
+                })
+                //{ Tag = c });
+                { Tag = font.Glyphs[i] });
             }
         }
 
-        public List<GfxFont> Fonts = new List<GfxFont>();
+        public static List<GfxFont> Fonts = new List<GfxFont>();
 
         int cellw = 12;
 
-   
+
         private bool getBitByMask(byte v, byte bitMask)
         {
             return (v & bitMask) > 0;
         }
 
-     
+
         GfxFont _font;
         public void updateGlyph(int glyphNo)
         {
-            int ww = _font.Glyphs[glyphNo, 1];
-            int hh = _font.Glyphs[glyphNo, 2];
-            byte[] data;
-            if (glyphNo < _font.Glyphs.GetLength(0) - 1)
-            {
-                var diff = _font.Glyphs[glyphNo + 1, 0] - _font.Glyphs[glyphNo, 0];
-                data = _font.Bitmaps.Skip(_font.Glyphs[glyphNo, 0]).Take(diff).ToArray();
-            }
-            else
-                data = _font.Bitmaps.Skip(_font.Glyphs[glyphNo, 0]).ToArray();
+            var ww = _font.Glyphs[glyphNo].Width;
+            var hh = _font.Glyphs[glyphNo].Height;
+            byte[] data = _font.Glyphs[glyphNo].Bitmap;
 
-            Bitmap bmp = new Bitmap(ww * cellw + 5, hh * cellw + 5);
+
+            Bitmap bmp = new Bitmap((int)(ww * cellw + 5), (int)(hh * cellw + 5));
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.White);
             int index = 0;
@@ -77,11 +78,11 @@ namespace gfxfont
             {
                 for (int i = 0; i < ww; i++)
                 {
-                    int bitIndex = i + ww * j;         // Bit index in array of bits
+                    int bitIndex = i + (int)ww * j;         // Bit index in array of bits
                     int _byte = bitIndex >> 3;             // Byte offset of bit, assume 8 bit bytes
                     int bitMask = 0x80 >> (bitIndex & 7); // Individual bit in byte array for bit
 
-                    gr.DrawRectangle(Pens.Black, i * cellw, j * cellw, cellw, cellw); ;                  
+                    gr.DrawRectangle(Pens.Black, i * cellw, j * cellw, cellw, cellw); ;
                     var bit = getBitByMask(data[_byte], (byte)bitMask);
                     if (bit)
                     {
@@ -97,7 +98,8 @@ namespace gfxfont
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
-            var ss = (ushort)listView1.SelectedItems[0].Tag;
+            var g = (Glyph)listView1.SelectedItems[0].Tag;
+            var ss = g.Code;
             ss -= _font.StartCode;
 
             updateGlyph(ss);
@@ -114,10 +116,10 @@ namespace gfxfont
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
+
 
         }
-        GfxFont parseFont(string path)
+        public static GfxFont ParseFont(string path)
         {
             var txt = File.ReadAllText(path);
             List<int> allb = new List<int>();
@@ -193,15 +195,6 @@ namespace gfxfont
                 }
             }
 
-            font1.Glyphs = new int[glp.Count, 6];
-            for (int i = 0; i < glp.Count; i++)
-            {
-                for (int j = 0; j < 6; j++)
-                {
-                    font1.Glyphs[i, j] = glp[i][j];
-                }
-            }
-
 
             //parse bitmaps
             var spl2 = bitmaps.Split(new char[] { ',', '{', '}', '\r', '\n' }).ToArray();
@@ -214,12 +207,41 @@ namespace gfxfont
 
                 bb.Add(Convert.ToByte(sp, 16));
             }
-            font1.Bitmaps = bb.ToArray();
+            //font1.Bitmaps = bb.ToArray();
 
+            for (int i = 0; i < glp.Count; i++)
+            {
+                var offset1 = glp[i][0];
+                byte[] data = null;
+                if (i < glp.Count - 1)
+                {
+                    var offset2 = glp[i + 1][0];
+                    data = bb.Skip(offset1).Take(offset2 - offset1).ToArray();
+                }
+                else
+                    data = bb.Skip(offset1).ToArray();
+
+                font1.Glyphs.Add(new Glyph()
+                {
+                    Bitmap = data,
+                    xAdvance = glp[i][3],
+                    Width = glp[i][1],
+                    Height = glp[i][2],
+                    xOffset = glp[i][4],
+                    yOffset = glp[i][5],
+                });
+            }
 
             var desc = spl22.First(z => z.Contains("GFXfont"));
             var spll = desc.Split(new char[] { ',', '}', ';', '\n', '\r' }).ToArray();
-            font1.StartCode = Convert.ToUInt16(spll[spll.Length - 3].Trim(), 16);
+            try
+            {
+                font1.StartCode = Convert.ToUInt16(spll[spll.Length - 3].Trim(), 16);
+            }
+            catch (Exception ex)
+            {
+
+            }
 
             return font1;
 
@@ -239,9 +261,32 @@ namespace gfxfont
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            var f = parseFont(ofd.FileName);
+            var f = ParseFont(ofd.FileName);
             Fonts.Add(f);
             updateFontsList();
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+            _font.Export(sfd.FileName);
+        }
+
+        private void copyGlyphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var gl = (Glyph)listView1.SelectedItems[0].Tag;
+            Clipboard.SetText(gl.ToXml());
+        }
+
+        private void pasteGlyphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var gl = (Glyph)listView1.SelectedItems[0].Tag;
+            var code = gl.Code; //preserve code
+            gl.ParseXml(Clipboard.GetText());
+            gl.Code = code;
         }
     }
 }
