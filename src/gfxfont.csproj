@@ -51,8 +51,20 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="generator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="generator.Designer.cs">
+      <DependentUpon>generator.cs</DependentUpon>
+    </Compile>
     <Compile Include="GfxFont.cs" />
     <Compile Include="Glyph.cs" />
+    <Compile Include="GlyphEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GlyphEdit.Designer.cs">
+      <DependentUpon>GlyphEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Kerning.cs" />
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>
@@ -60,10 +72,19 @@
     <Compile Include="mdi.Designer.cs">
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
+    <Compile Include="PictureBoxWithInterpolationMode.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="generator.resx">
+      <DependentUpon>generator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GlyphEdit.resx">
+      <DependentUpon>GlyphEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>

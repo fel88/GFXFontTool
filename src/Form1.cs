@@ -68,8 +68,10 @@ namespace gfxfont
 
 
         GfxFont _font;
+        Glyph selectedGlyph = null;
         public void updateGlyph(int glyphNo)
         {
+            selectedGlyph = _font.Glyphs[glyphNo];
             var ww = _font.Glyphs[glyphNo].Width;
             var hh = _font.Glyphs[glyphNo].Height;
             byte[] data = _font.Glyphs[glyphNo].Bitmap;
@@ -296,6 +298,13 @@ namespace gfxfont
             var code = gl.Code; //preserve code
             gl.ParseXml(Clipboard.GetText());
             gl.Code = code;
+        }
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GlyphEdit ge = new GlyphEdit();
+            ge.Init(selectedGlyph);
+            ge.ShowDialog();
         }
     }
 }
