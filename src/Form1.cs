@@ -35,12 +35,12 @@ namespace gfxfont
 
         void setFont(GfxFont font)
         {
-            _font = font;            
+            _font = font;
             listView1.Items.Clear();
             for (int i = 0; i < font.Glyphs.Count; i++)
             {
                 ushort c = (ushort)(i + font.StartCode);
-                font.Glyphs[i].Code = c;                
+                font.Glyphs[i].Code = c;
                 char cc = (char)c;
                 listView1.Items.Add(new ListViewItem(new string[] {
                     $"{cc}",
@@ -75,7 +75,11 @@ namespace gfxfont
             var ww = _font.Glyphs[glyphNo].Width;
             var hh = _font.Glyphs[glyphNo].Height;
             byte[] data = _font.Glyphs[glyphNo].Bitmap;
-
+            if (data.Length == 0)
+            {
+                pictureBox1.Image = null;
+                return;
+            }
 
             Bitmap bmp = new Bitmap((int)(ww * cellw + 5), (int)(hh * cellw + 5));
             var gr = Graphics.FromImage(bmp);

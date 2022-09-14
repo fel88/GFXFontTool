@@ -74,7 +74,7 @@ namespace gfxfont
                 if (((char)i) == ' ')
                 {
                     w = ms.Width;
-                  //  h = ms.Height;
+                    //  h = ms.Height;
                 }
                 if (pp.Any())
                 {
@@ -101,7 +101,10 @@ namespace gfxfont
                     }
                 }
 
-
+                if (ranges.Count > 0 && !ranges.Any(z => z.Contains(i)))
+                {
+                    data = new byte[0];
+                }
                 font.Glyphs.Add(new Glyph()
                 {
                     Code = (ushort)i,
@@ -114,7 +117,7 @@ namespace gfxfont
             }
             SaveFileDialog sfd = new SaveFileDialog();
             if (sfd.ShowDialog() != DialogResult.OK) return;
-            font.Export(sfd.FileName);
+            font.Export(sfd.FileName, textBox2.Text);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -126,6 +129,49 @@ namespace gfxfont
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        List<FontRange> ranges = new List<FontRange>();
+        void updateRangesList()
+        {
+            listView1.BeginUpdate();
+            listView1.Items.Clear();
+            foreach (var range in ranges)
+            {
+                listView1.Items.Add(new ListViewItem(new string[] {
+                range.From.ToString("X2"), range.To.ToString("X2") })
+                { Tag = range });
+            }
+            listView1.EndUpdate();
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FontRange range = new FontRange();
+            range.From = (int)numericUpDown2.Value;
+            range.To = (int)numericUpDown3.Value;
+            ranges.Add(range);
+            updateRangesList();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            ranges.Remove(listView1.SelectedItems[0].Tag as FontRange);
+            updateRangesList();
+        }
+    }
+    public class FontRange
+    {
+        public int From;
+        public int To;
+        public bool Contains(int t)
+        {
+            return t >= From && t <= To;
         }
     }
 }

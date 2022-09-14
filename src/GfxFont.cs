@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -10,24 +9,23 @@ namespace gfxfont
         public string Name;
         public ushort StartCode;
         public int YAdvance;
-        //public int[,] Glyphs;
-        //public byte[] Bitmaps;
+        
         public List<Glyph> Glyphs = new List<Glyph>();
-        internal void Export(string fileName)
+        internal void Export(string fileName, string fontName = "exportFont")
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("const uint8_t exportFontBitmaps[] PROGMEM = {");
+            sb.AppendLine($"const uint8_t {fontName}Bitmaps[] PROGMEM = " + "{");
             foreach (var gg in Glyphs)
             {
                 foreach (var bb in gg.Bitmap)
                 {
-                    sb.Append($"0x{bb.ToString("X2")}, ");
+                    sb.Append($"0x{bb:X2}, ");
                 }
                 sb.AppendLine();
             }
             sb.AppendLine("};");
 
-            sb.AppendLine("const GFXglyph exportFontGlyphs[] PROGMEM = {");
+            sb.AppendLine($"const GFXglyph {fontName}Glyphs[] PROGMEM = " + "{");
             int offset = 0;
             foreach (var item in Glyphs)
             {
@@ -35,9 +33,9 @@ namespace gfxfont
                 offset += item.Bitmap.Length;
             }
             sb.AppendLine("};");
-            sb.AppendLine("const GFXfont exportFont PROGMEM = {");
-            sb.AppendLine("(uint8_t*)exportFontBitmaps,");
-            sb.AppendLine("(GFXglyph*)exportFontGlyphs,");
+            sb.AppendLine($"const GFXfont {fontName} PROGMEM = " + "{");
+            sb.AppendLine($"(uint8_t*){fontName}Bitmaps,");
+            sb.AppendLine($"(GFXglyph*){fontName}Glyphs,");
             var endCode = StartCode + Glyphs.Count;
             sb.AppendLine($"{StartCode}, {endCode}, {YAdvance} ");
             sb.AppendLine("};");
