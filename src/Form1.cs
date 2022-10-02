@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace gfxfont
@@ -13,15 +11,19 @@ namespace gfxfont
     {
         static Form1()
         {
-            Fonts.Add(ParseFont("CourierCyr12.h"));
+            if (File.Exists("CourierCyr12.h"))
+                Fonts.Add(ParseFont("CourierCyr12.h"));
         }
         public Form1()
         {
             InitializeComponent();
 
-            _font = Fonts.Last();
-            setFont(_font);
-            updateFontsList();
+            if (Fonts.Count > 0)
+            {
+                _font = Fonts.Last();
+                setFont(_font);
+                updateFontsList();
+            }
         }
 
         void updateFontsList()
@@ -88,7 +90,7 @@ namespace gfxfont
             for (int j = 0; j < hh; j++)
             {
                 for (int i = 0; i < ww; i++)
-                {
+                {                    
                     int bitIndex = i + (int)ww * j;         // Bit index in array of bits
                     int _byte = bitIndex >> 3;             // Byte offset of bit, assume 8 bit bytes
                     int bitMask = 0x80 >> (bitIndex & 7); // Individual bit in byte array for bit
