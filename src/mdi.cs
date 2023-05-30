@@ -35,5 +35,12 @@ namespace gfxfont
             g.MdiParent = this;
             g.Show();
         }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            BitmapGenerator g = new BitmapGenerator();
+            g.MdiParent = this;
+            g.Show();
+        }
     }
 }
