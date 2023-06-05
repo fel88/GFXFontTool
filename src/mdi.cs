@@ -42,5 +42,12 @@ namespace gfxfont
             g.MdiParent = this;
             g.Show();
         }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            STM32Fonts f = new STM32Fonts();
+            f.MdiParent = this;
+            f.Show();
+        }
     }
 }
