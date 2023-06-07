@@ -17,6 +17,7 @@ namespace gfxfont
         public STM32Fonts()
         {
             InitializeComponent();
+            fontDialog1.Font = new Font("Courier New", (int)numericUpDown1.Value);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -65,20 +66,20 @@ namespace gfxfont
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        public void GenerateOneGlyph(char c)
         {
-            Font f = new Font("Courier New", (int)numericUpDown1.Value);
-            var gl = getGlyph(textBox1.Text[0], f);
+            Font f = fontDialog1.Font;
+            var gl = getGlyph(c, f);
             pictureBox1.Image = gl;
             label1.Text = gl.Width + "x" + gl.Height;
             List<byte> bytes = new List<byte>();
             List<byte> bits = new List<byte>();
-
+            int startX = (int)numericUpDown2.Value;
             for (int j = 0; j < gl.Height; j++)
             {
-                for (int i = 0; i < gl.Width; i++)
+                for (int i = startX; i < gl.Width; i++)
                 {
-                    if (i > 16) 
+                    if (i >= (16 + startX))
                         break;
                     var px = gl.GetPixel(i, j);
                     if (px.R < 128)
@@ -96,7 +97,7 @@ namespace gfxfont
                         {
                             if (bits[k] == 1)
                             {
-                                b0 |= (byte)(1 << (8-k-1));
+                                b0 |= (byte)(1 << (8 - k - 1));
                             }
                         }
                         bytes.Add(b0);
@@ -123,14 +124,24 @@ namespace gfxfont
             }
             while (bytes.Count > 32) bytes.RemoveAt(bytes.Count - 1);
 
-            richTextBox2.Clear();
+            richTextBox2.AppendText($"// {c}" + Environment.NewLine);
             for (int i = 0; i < bytes.Count; i += 2)
             {
                 richTextBox2.AppendText("0x" + bytes[i].ToString("X2") + ", 0x");
-                richTextBox2.AppendText(bytes[i + 1].ToString("X2"));
+                richTextBox2.AppendText(bytes[i + 1].ToString("X2") + ", ");
                 richTextBox2.AppendText(Environment.NewLine);
             }
+            richTextBox2.AppendText(Environment.NewLine);
+
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            richTextBox2.Clear();
+
+            GenerateOneGlyph(textBox1.Text[0]);
+        }
+
         Bitmap getGlyph(char c, Font font)
         {
             var ms = TextRenderer.MeasureText(c + "", font);
@@ -140,6 +151,23 @@ namespace gfxfont
             gr.Clear(Color.White);
             gr.DrawString(c + "", font, Brushes.Black, 0, 0);
             return bmp;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            richTextBox2.Clear();
+            char start = textBox1.Text[0];
+            char end = textBox2.Text[0];
+            for (char i = start; i <= end; i++)
+            {
+                GenerateOneGlyph(i);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            fontDialog1.ShowDialog();
+            label3.Text = fontDialog1.Font.FontFamily.ToString() + " " + fontDialog1.Font.Size;
         }
     }
 }
