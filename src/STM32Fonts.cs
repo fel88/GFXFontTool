@@ -26,37 +26,43 @@ namespace gfxfont
             foreach (var item in richTextBox1.Lines)
             {
                 var ar = item.Trim().Split(new char[] { ',', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (ar.Length < 2) continue;
-                var b1 = Convert.ToByte(ar[0].Trim(), 16);
-                var b2 = Convert.ToByte(ar[1].Trim(), 16);
-                bb.Add(b1);
-                bb.Add(b2);
+                if (ar.Length < bytesPerRow)
+                    continue;
+
+                for (int i = 0; i < bytesPerRow; i++)
+                {
+                    var b1 = Convert.ToByte(ar[i].Trim(), 16);
+                    bb.Add(b1);
+                }
             }
+
             int cell = 7;
-            Bitmap bmp = new Bitmap(cell * 11, cell * 16);
+            Bitmap bmp = new Bitmap(cell * outputFontWidth, cell * outputFontHeigth);
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.White);
-            for (int i = 0; i < 16; i++)
-                for (int j = 0; j < 11; j++)
+            int index = 0;
+            for (int i = 0; i < outputFontHeigth; i++)
+            {
+                var bytes = bb.Skip(index).Take(bytesPerRow).ToArray();
+                index += bytesPerRow;
+                List<int> bits = new List<int>();
+                foreach (var bt in bytes)
                 {
-                    var byte0 = bb[i * 2];
-                    var byte1 = bb[i * 2 + 1];
-                    List<int> bits = new List<int>();
-                    foreach (var bt in new[] { byte0, byte1 })
+                    for (int k = 0; k < 8; k++)
                     {
-                        for (int k = 0; k < 8; k++)
-                        {
-                            if ((bt & (1 << (8 - k - 1))) > 0)
-                                bits.Add(1);
-                            else
-                                bits.Add(0);
-                        }
-
+                        if ((bt & (1 << (8 - k - 1))) > 0)
+                            bits.Add(1);
+                        else
+                            bits.Add(0);
                     }
 
+                }
+                for (int j = 0; j < outputFontWidth; j++)
+                {
                     if (bits[j] > 0)
                         gr.FillRectangle(Brushes.Black, j * cell, i * cell, cell, cell);
                 }
+            }
 
             pictureBox1.Image = bmp;
         }
@@ -66,6 +72,7 @@ namespace gfxfont
 
         }
 
+        int bytesPerRow = 2;
         public void GenerateOneGlyph(char c)
         {
             Font f = fontDialog1.Font;
@@ -75,11 +82,13 @@ namespace gfxfont
             List<byte> bytes = new List<byte>();
             List<byte> bits = new List<byte>();
             int startX = (int)numericUpDown2.Value;
-            for (int j = 0; j < gl.Height; j++)
+            int startY = (int)numericUpDown3.Value;
+
+            for (int j = startY; j < gl.Height; j++)
             {
                 for (int i = startX; i < gl.Width; i++)
                 {
-                    if (i >= (16 + startX))
+                    if (i >= (bytesPerRow * 8 + startX))
                         break;
                     var px = gl.GetPixel(i, j);
                     if (px.R < 128)
@@ -125,14 +134,30 @@ namespace gfxfont
             while (bytes.Count > 32) bytes.RemoveAt(bytes.Count - 1);
 
             richTextBox2.AppendText($"// {c}" + Environment.NewLine);
-            for (int i = 0; i < bytes.Count; i += 2)
+            int lines = 0;
+            for (int i = 0; i < bytes.Count; i += bytesPerRow)
             {
-                richTextBox2.AppendText("0x" + bytes[i].ToString("X2") + ", 0x");
-                richTextBox2.AppendText(bytes[i + 1].ToString("X2") + ", ");
-                richTextBox2.AppendText(Environment.NewLine);
+                richTextBox2.AppendText("0x" + bytes[i].ToString("X2"));
+                for (int j = 1; j < bytesPerRow; j++)
+                {
+                    richTextBox2.AppendText(", 0x" + bytes[i + j].ToString("X2"));
+                }
+
+                richTextBox2.AppendText(", " + Environment.NewLine);
+                lines++;
+                if (lines >= outputFontHeigth) 
+                    break;
+            }
+            if (lines < outputFontHeigth)
+            {
+                richTextBox2.AppendText("0x0");
+                for (int j = 1; j < bytesPerRow; j++)
+                {
+                    richTextBox2.AppendText(", 0x0" );
+                }
+                richTextBox2.AppendText(", " + Environment.NewLine);
             }
             richTextBox2.AppendText(Environment.NewLine);
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -168,6 +193,29 @@ namespace gfxfont
         {
             fontDialog1.ShowDialog();
             label3.Text = fontDialog1.Font.FontFamily.ToString() + " " + fontDialog1.Font.Size;
+        }
+        int outputFontHeigth = 16;
+        int outputFontWidth = 11;
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 1)
+            {
+                outputFontHeigth = 12;
+                outputFontWidth = 7;
+                bytesPerRow = 1;
+
+            }
+            if (comboBox1.SelectedIndex == 0)
+            {
+                outputFontHeigth = 16;
+                outputFontWidth = 11;
+                bytesPerRow = 2;
+            }
+        }
+
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
